@@ -1,0 +1,12 @@
+# Directories
+build/
+.vscode/
+tmp/
+
+# Temporary files
+*.o
+*.swp
+
+# Outputs
+**/*.make
+Makefile

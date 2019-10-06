@@ -1,0 +1,41 @@
+#pragma once
+
+#include <cstdlib>
+#include <cstdio>
+#include <string>
+#include <vector>
+
+#define GBDSM_UNUSED(x) (void)x
+
+namespace yb {
+
+    using Rom = std::vector<uint8_t>;
+
+    template <class... Args>
+    inline void error(const char *msg, Args&&... args)
+    {
+        std::fprintf(stderr, msg, std::forward<Args>(args)...);
+    }
+
+    inline void error(const char *msg)
+    {
+        std::fputs(msg, stderr);
+    }
+
+    template <class... Args>
+    inline void exit(const char *msg, Args&&... args)
+    {
+        std::fprintf(stderr, msg, std::forward<Args>(args)...);
+        std::exit(1);
+    }
+
+    inline void exit(const char *msg)
+    {
+        std::fputs(msg, stderr);
+        std::exit(1);
+    }
+
+   
+
+}
+
