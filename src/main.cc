@@ -2,7 +2,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <string>
+
 #include "common.h"
+#include "cartridge.h"
 
 static void print_help()
 {
@@ -28,31 +31,31 @@ static size_t fsize(std::FILE *file)
     return size;
 }
 
-static yb::Rom read_rom(const char* path)
+static yb::Cartridge read_cartridge(const char* path)
 {
     std::FILE *file = std::fopen(path, "rb");
     if (!file) {
-        return yb::Rom{};
+        return std::vector<std::uint8_t>{};
     }
 
     size_t fileSize = fsize(file);
 
-    yb::Rom rom(fileSize, 0);
+    std::vector<std::uint8_t> mem(fileSize, 0);
 
-    size_t bytesRead = std::fread(rom.data(), sizeof(uint8_t), fileSize, file);
+    size_t bytesRead = std::fread(mem.data(), sizeof(uint8_t), fileSize, file);
     if (bytesRead != fileSize) {
         std::fclose(file);
 
-        return yb::Rom{};
+        return std::vector<std::uint8_t>{};
     }
 
     std::fclose(file);
 
-    return rom;
+    return mem;
 }
 
 struct Args {
-    std::string rom_path;
+    std::string cartridge_path;
     bool print_help;
 };
 
@@ -68,7 +71,7 @@ static Args parse_args(int argc, char **argv)
         return args;
     }
 
-    args.rom_path = argv[1];
+    args.cartridge_path = argv[1];
     args.print_help = false;
 
     for (int i = 2; i < argc;) {
@@ -93,12 +96,12 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    if (args.rom_path.empty()) {
+    if (args.cartridge_path.empty()) {
         yb::exit("The GameBoy ROM file was not supplied.\n");
     }
 
-    auto rom = read_rom(args.rom_path.c_str());
-    if (rom.empty()) {
-        yb::exit("Could not read %s.\n", args.rom_path.c_str());
+    auto cartridge = read_cartridge(args.cartridge_path.c_str());
+    if (cartridge.empty()) {
+        yb::exit("Could not read %s.\n", args.cartridge_path.c_str());
     }
 }

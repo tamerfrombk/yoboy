@@ -2,14 +2,10 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <string>
-#include <vector>
 
 #define GBDSM_UNUSED(x) (void)x
 
 namespace yb {
-
-    using Rom = std::vector<uint8_t>;
 
     template <class... Args>
     inline void error(const char *msg, Args&&... args)
@@ -34,8 +30,6 @@ namespace yb {
         std::fputs(msg, stderr);
         std::exit(1);
     }
-
-   
 
 }
 
