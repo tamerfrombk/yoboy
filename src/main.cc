@@ -5,7 +5,7 @@
 #include <string>
 
 #include "common.h"
-#include "cartridge.h"
+#include "emulator.h"
 
 static void print_help()
 {
@@ -104,4 +104,8 @@ int main(int argc, char **argv)
     if (cartridge.empty()) {
         yb::exit("Could not read %s.\n", args.cartridge_path.c_str());
     }
+
+    yb::Emulator emulator(cartridge);
+
+    emulator.start();
 }
