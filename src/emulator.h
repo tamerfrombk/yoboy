@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cartridge.h"
+#include "cpu.h"
 
 namespace yb {
 
@@ -15,5 +16,6 @@ namespace yb {
 
     private:
         yb::Cartridge cartridge_;
+        yb::CPU cpu_;
     };
 }
