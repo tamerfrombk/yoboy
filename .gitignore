@@ -6,6 +6,8 @@ tmp/
 # Temporary files
 *.o
 *.swp
+scripts/*.h
+scripts/*.cc
 
 # Outputs
 **/*.make
