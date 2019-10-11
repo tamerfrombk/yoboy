@@ -4,7 +4,9 @@
 
 yb::CPU::CPU()
 {
-    AF.value = 0xABCD;
-
-    std::printf("hi: 0x%.2X lo: 0x%.2X   value: 0x%.4x\n", AF.hi, AF.lo, AF.value);
+    AF.value = 0x01B0;
+    BC.value = 0x0013;
+    DE.value = 0x00D8;
+    HL.value = 0x014D;
+    SP.value = 0xFFFE;
 }
