@@ -11,6 +11,7 @@ namespace yb {
         MMU(uint8_t* cartridge);
 
         uint8_t read8(uint16_t addr) const;
+        uint16_t read16(uint16_t addr) const;
 
     private:
         uint8_t* cartridge_;
