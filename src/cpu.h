@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "mmu.h"
 
 namespace yb {
 
@@ -18,6 +19,10 @@ namespace yb {
 
     struct CPU
     {
+        CPU(yb::MMU* mmu);
+
+        uint8_t cycle();
+    
         Register AF;
         Register BC;
         Register DE;
@@ -26,7 +31,7 @@ namespace yb {
         Register SP;
         Register PC;
 
-        CPU();
-    
+        yb::MMU* mmu_;
+
     };
 }
