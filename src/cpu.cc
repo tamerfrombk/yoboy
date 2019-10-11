@@ -32,6 +32,12 @@ uint8_t yb::CPU::cycle()
     case 0x00:
         PC.value += inst.length;
         return inst.cycles;
+    case 0xC3: {
+        const uint16_t target = mmu_->read16(PC.value + 1);
+        yb::log("JP target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
