@@ -5,6 +5,13 @@
 
 namespace yb {
 
+    // TODO: add other MCB types
+    enum class CartridgeType
+    {
+        ROM_ONLY = 0,
+        ROM_MBC1
+    };
+
     struct Cartridge
     {
     public:
@@ -14,7 +21,10 @@ namespace yb {
 
         uint8_t* data();
 
+        CartridgeType type() const;
+
     private:
         std::vector<std::uint8_t> mem_;
+        CartridgeType type_;
     };
 }
