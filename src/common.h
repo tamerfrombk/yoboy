@@ -33,5 +33,16 @@ namespace yb {
         std::exit(1);
     }
 
+    template <class... Args>
+    inline void log(const char *msg, Args&&... args)
+    {
+        std::printf(msg, std::forward<Args>(args)...);
+    }
+
+    inline void log(const char *msg)
+    {
+        std::puts(msg);
+    }
+
 }
 
