@@ -15,6 +15,11 @@ namespace yb {
         {
             return mem_.empty();
         }
+
+        inline uint8_t* data()
+        {
+            return mem_.data();
+        }
         
         std::vector<std::uint8_t> mem_;
     };

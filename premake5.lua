@@ -1,9 +1,13 @@
 workspace "yoBoy"
    configurations { "Debug", "Release" }
+   warnings "Extra"
 
 project "yoboy"
    kind "ConsoleApp"
+
    language "C++"
+   cppdialect "C++14"
+
    targetdir ("build/%{cfg.longname}")
    location ("build")
 

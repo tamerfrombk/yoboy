@@ -2,6 +2,7 @@
 
 #include "cartridge.h"
 #include "cpu.h"
+#include "mmu.h"
 
 namespace yb {
 
@@ -16,6 +17,7 @@ namespace yb {
 
     private:
         yb::Cartridge cartridge_;
+        yb::MMU mmu_;
         yb::CPU cpu_;
     };
 }

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 
-#define GBDSM_UNUSED(x) (void)x
+#define YB_UNUSED(x) (void)x
+
+#define YB_MEM_SIZE (0xFFFF) 
 
 namespace yb {
 

@@ -3,6 +3,7 @@
 
 yb::Emulator::Emulator(yb::Cartridge cartridge)
     : cartridge_(std::move(cartridge))
+    , mmu_(cartridge_.data())
     {}
         
 bool yb::Emulator::isRunning() const
