@@ -7,20 +7,14 @@ namespace yb {
 
     struct Cartridge
     {
-        Cartridge(std::vector<std::uint8_t> mem)
-            : mem_(std::move(mem))
-            {}
+    public:
+        Cartridge(std::vector<std::uint8_t> mem);
         
-        inline bool empty() const
-        {
-            return mem_.empty();
-        }
+        bool empty() const;
 
-        inline uint8_t* data()
-        {
-            return mem_.data();
-        }
-        
+        uint8_t* data();
+
+    private:
         std::vector<std::uint8_t> mem_;
     };
 }
