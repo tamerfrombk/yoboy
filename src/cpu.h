@@ -33,5 +33,8 @@ namespace yb {
 
         yb::MMU* mmu_;
 
+    private:
+        void jump_if(bool cond);
+
     };
 }
