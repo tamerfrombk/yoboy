@@ -67,6 +67,18 @@ uint8_t yb::CPU::cycle()
         xor_(this, AF.hi);
         PC.value += inst.length;
         return inst.cycles;
+    case 0x21:
+        HL.value = mmu_->read16(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x0E:
+        BC.lo = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x06:
+        BC.hi = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
