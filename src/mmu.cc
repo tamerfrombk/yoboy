@@ -23,3 +23,9 @@ uint16_t yb::MMU::read16(uint16_t addr) const
     const uint16_t value = (uint16_t)ram_[addr + 1] << 8 | ram_[addr];
     return value;
 }
+
+void yb::MMU::write8(uint16_t addr, uint8_t value)
+{
+    // TODO: add checks
+    ram_[addr] = value;
+}

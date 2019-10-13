@@ -79,6 +79,11 @@ uint8_t yb::CPU::cycle()
         BC.hi = mmu_->read8(PC.value + 1);
         PC.value += inst.length;
         return inst.cycles;
+    case 0x32:
+        mmu_->write8(HL.value, AF.lo);
+        HL.value -= 1;
+        PC.value += inst.length;
+        return inst.length;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
