@@ -5,6 +5,19 @@
 #include "ops.h"
 #include "common.h"
 
+namespace yb {
+
+static void jump_if(yb::CPU* cpu, yb::MMU* mmu, bool cond)
+{
+    if (cond) {
+        const uint16_t target = mmu->read16(cpu->PC.value + 1);
+        yb::log("JP target: 0x%.4X.\n", target);
+        cpu->PC.value = target;
+    }
+}
+
+}
+
 yb::CPU::CPU(yb::MMU* mmu)
     : mmu_(mmu)
 {
@@ -33,19 +46,10 @@ uint8_t yb::CPU::cycle()
         PC.value += inst.length;
         return inst.cycles;
     case 0xC3: 
-        jump_if(true);
+        jump_if(this, mmu_, true);
         return inst.cycles;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
    }
-}
-
-void yb::CPU::jump_if(bool cond)
-{
-    if (cond) {
-        const uint16_t target = mmu_->read16(PC.value + 1);
-        yb::log("JP target: 0x%.4X.\n", target);
-        PC.value = target;
-    }
 }

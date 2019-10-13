@@ -32,9 +32,5 @@ namespace yb {
         Register PC;
 
         yb::MMU* mmu_;
-
-    private:
-        void jump_if(bool cond);
-
     };
 }
