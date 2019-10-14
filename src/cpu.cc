@@ -197,6 +197,11 @@ uint8_t yb::CPU::cycle()
         }
         return inst.cycles;
     }
+    // LD A,n
+    case 0x3E:
+        AF.hi = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
