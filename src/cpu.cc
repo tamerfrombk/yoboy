@@ -79,6 +79,18 @@ static void or_(yb::CPU* cpu, uint8_t n)
     cpu->AF.lo &= ~(NF | HF | CF);
 }
 
+// Apparently, 'and' is a keyword in C++. Who knew?
+static void and_(yb::CPU* cpu, uint8_t n)
+{
+    cpu->AF.hi &= n;
+    if (cpu->AF.hi == 0) {
+        cpu->AF.lo |= ZF;
+    }
+
+    cpu->AF.lo |= HF;
+    cpu->AF.lo &= ~(NF | CF);
+}
+
 static uint8_t dec8(yb::CPU* cpu, uint8_t n)
 {
     const uint8_t result = n - 1;
@@ -619,6 +631,43 @@ uint8_t yb::CPU::cycle()
         return inst.cycles;
     case 0xF6:
         or_(this, mmu_->read8(PC.value + 1));
+        PC.value += inst.length;
+        return inst.cycles;
+    // AND n
+    case 0xA7:
+        and_(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA0:
+        and_(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA1:
+        and_(this, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA2:
+        and_(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA3:
+        and_(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA4:
+        and_(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA5:
+        and_(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA6:
+        and_(this, mmu_->read8(HL.value));
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xE6:
+        and_(this, mmu_->read8(PC.value + 1));
         PC.value += inst.length;
         return inst.cycles;
     // RET
