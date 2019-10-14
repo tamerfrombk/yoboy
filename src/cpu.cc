@@ -129,6 +129,13 @@ static void cp(yb::CPU* cpu, uint8_t n)
     }
 }
 
+static void cpl(yb::CPU* cpu)
+{
+    cpu->AF.hi = ~(cpu->AF.hi);
+
+    cpu->AF.lo |= (NF | HF);
+}
+
 }
 
 yb::CPU::CPU(yb::MMU* mmu)
@@ -724,6 +731,11 @@ uint8_t yb::CPU::cycle()
     // EI
     case 0xFB:
         // TODO: enable interrupt
+        PC.value += inst.length;
+        return inst.cycles;
+    // CPL
+    case 0x2F:
+        cpl(this);
         PC.value += inst.length;
         return inst.cycles;
     // LDH (n), A
