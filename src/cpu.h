@@ -18,8 +18,9 @@ namespace yb {
         };
     };
 
-    struct CPU
+    class CPU
     {
+    public:
         CPU(yb::MMU* mmu);
 
         uint8_t cycle();
@@ -32,7 +33,10 @@ namespace yb {
         Register SP;
         Register PC;
 
+    private:
         yb::MMU* mmu_;
         std::stack<uint16_t> st_;
+
+        uint8_t execute_prefix();
     };
 }

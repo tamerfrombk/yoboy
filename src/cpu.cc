@@ -838,8 +838,23 @@ uint8_t yb::CPU::cycle()
         cp(this, mmu_->read8(PC.value + 1));
         PC.value += inst.length;
         return inst.cycles;
+    case 0xCB:
+        yb::log("PREFIX.");
+        PC.value += 1;
+        return execute_prefix();
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
    }
+}
+
+uint8_t yb::CPU::execute_prefix()
+{
+    const uint8_t op = mmu_->read8(PC.value);
+    const Instruction& inst = yb::PREFIXED_INSTRUCTIONS.at(op);
+    switch (op) {
+    default:
+        yb::exit("Unknown PREFIX instruction 0x%.2X.\n", op);
+        return 0;
+    }
 }
