@@ -16,12 +16,12 @@ static constexpr uint8_t CF = (1 << 4);
 // We will always have to borrow from bit 4 (half carry)
 // if A is smaller than B in the bottom 4 bits.
 //
-// For example, this subtraction leads to a half carry:
+// For example, this subtraction leads to a half borrow:
 // a) 00000100 = 4
 // b) 00001000 = 8
 // --
 // r) 11111100 = -4
-// Another example where a carry is required but the numbers 
+// Another example where a borrow is required but the numbers 
 // aren't already smaller than what can fit in 4 bits:
 // a) 00010000 = 16
 // b) 00100001 = 33
@@ -31,9 +31,32 @@ static constexpr uint8_t CF = (1 << 4);
 // The below equation will then compare 0 (bottom 4 bits of a)
 // against 1 (bottom 4 bits of b) to determine if a half carry
 // is necessary.
-static bool half_carry(uint8_t a, uint8_t b)
+static bool half_borrow(uint8_t a, uint8_t b)
 {
     return (a & 0xF) < (b & 0xF);
+}
+
+// Assuming a = LHS, b = RHS, and r is the result...
+// We will always have to carry from bit 3
+// if the result is larger that 15 when taking into account the lower nibble.
+// For example, here a carry is required:
+// a) 00001000 = 8
+// b) 00001000 = 8
+// --
+// r) 00010000 = 16
+// where we don't require one here:
+// a) 00000001 = 1
+// b) 00000010 = 2
+// --
+// r) 00000011 = 3
+// or here: 
+// a) 00001000 = 8
+// b) 00000001 = 1
+// --
+// r) 00001001 = 9
+static bool half_carry(uint8_t a, uint8_t b)
+{
+    return ((a & 0xF) + (b & 0xF)) > 0xF;
 }
 
 // Apparently, 'xor' is a keyword in C++. Who knew?
@@ -55,7 +78,23 @@ static uint8_t dec8(yb::CPU* cpu, uint8_t n)
 
     cpu->AF.lo |= NF;
 
-    if (!half_carry(n, 1)) {
+    if (!half_borrow(n, 1)) {
+        cpu->AF.lo |= HF;
+    }
+
+    return result;
+}
+
+static uint8_t inc8(yb::CPU* cpu, uint8_t n)
+{
+    const uint8_t result = n + 1;
+    if (result == 0) {
+        cpu->AF.lo |= ZF;
+    }
+
+    cpu->AF.lo &= ~(NF);
+
+    if (half_carry(n, 1)) {
         cpu->AF.lo |= HF;
     }
 
@@ -71,7 +110,7 @@ static void cp(yb::CPU* cpu, uint8_t n)
 
     cpu->AF.lo |= NF;
 
-    if (!half_carry(cpu->AF.hi, n)) {
+    if (!half_borrow(cpu->AF.hi, n)) {
         cpu->AF.lo |= HF;
     }
 
@@ -467,6 +506,41 @@ uint8_t yb::CPU::cycle()
         mmu_->write8(0xFF00 + BC.lo, AF.hi);
         PC.value += inst.length;
         return inst.cycles;
+    // INC n
+    case 0x3C:
+        AF.hi = inc8(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x04:
+        BC.hi = inc8(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x0C:
+        BC.lo = inc8(this, BC.lo);    
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x14:
+        DE.hi = inc8(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x1C:
+        DE.lo = inc8(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x24:
+        HL.hi = inc8(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x2C:
+        HL.lo = inc8(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x34: {
+        const uint8_t value = mmu_->read8(HL.value);
+        mmu_->write8(HL.value, inc8(this, value));
+        PC.value += inst.length;
+        return inst.cycles;
+    }
     // NOP
     case 0x00:
         PC.value += inst.length;
