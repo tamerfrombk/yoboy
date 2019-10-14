@@ -148,7 +148,18 @@ static void cpl(yb::CPU* cpu)
     cpu->AF.lo |= (NF | HF);
 }
 
+static uint8_t swap(yb::CPU* cpu, uint8_t n)
+{
+    const uint8_t result = ((n & 0xF) << 4) | ((n & 0xF0) >> 4);
+    if (result == 0) {
+        cpu->AF.lo |= ZF;
+    }
+    cpu->AF.lo &= ~(NF | HF | CF);
+
+    return result;
 }
+
+} // end namespace
 
 yb::CPU::CPU(yb::MMU* mmu)
     : mmu_(mmu)
@@ -853,6 +864,41 @@ uint8_t yb::CPU::execute_prefix()
     const uint8_t op = mmu_->read8(PC.value);
     const Instruction& inst = yb::PREFIXED_INSTRUCTIONS.at(op);
     switch (op) {
+    // SWAP n
+    case 0x37:
+        AF.hi = yb::swap(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x30:
+        BC.hi = yb::swap(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x31:
+        BC.lo = yb::swap(this, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x32:
+        DE.hi = yb::swap(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x33:
+        DE.lo = yb::swap(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x34:
+        HL.hi = yb::swap(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x35:
+        HL.lo = yb::swap(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x36: {
+        const uint8_t value = mmu_->read8(HL.value);
+        mmu_->write8(HL.value, value);
+        PC.value += inst.length;
+        return inst.cycles;
+    }
     default:
         yb::exit("Unknown PREFIX instruction 0x%.2X.\n", op);
         return 0;
