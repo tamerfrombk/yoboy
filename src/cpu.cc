@@ -553,7 +553,8 @@ uint8_t yb::CPU::cycle()
     }
     // CALL nn
     case 0xCD: {
-        SP.value = PC.value + inst.length;
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
         const uint16_t target = mmu_->read16(PC.value + 1);
         yb::log("CALL target: 0x%.4X.\n", target);
         PC.value = target;
@@ -612,6 +613,13 @@ uint8_t yb::CPU::cycle()
     case 0xF6:
         or_(this, mmu_->read8(PC.value + 1));
         PC.value += inst.length;
+        return inst.cycles;
+    // RET
+    case 0xC9:
+        yb::log("RET target: 0x%.4X.\n", SP.value);
+        PC.value = SP.value;
+        st_.pop();
+        SP.value = st_.top();
         return inst.cycles;
     // NOP
     case 0x00:

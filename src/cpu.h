@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "mmu.h"
+#include <stack>
 
 namespace yb {
 
@@ -32,5 +33,6 @@ namespace yb {
         Register PC;
 
         yb::MMU* mmu_;
+        std::stack<uint16_t> st_;
     };
 }
