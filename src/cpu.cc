@@ -434,6 +434,28 @@ uint8_t yb::CPU::cycle()
         mmu_->write8(mmu_->read16(PC.value + 1), AF.hi);
         PC.value += inst.length;
         return inst.cycles;
+    // LD n, nn
+    case 0x01:
+        BC.value = mmu_->read16(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x11:
+        DE.value = mmu_->read16(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x21:
+        HL.value = mmu_->read16(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x31:
+        SP.value = mmu_->read16(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    // LD SP, HL
+    case 0xF9:
+        SP.value = HL.value;
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
@@ -446,10 +468,6 @@ uint8_t yb::CPU::cycle()
     }
     case 0xAF:
         xor_(this, AF.hi);
-        PC.value += inst.length;
-        return inst.cycles;
-    case 0x21:
-        HL.value = mmu_->read16(PC.value + 1);
         PC.value += inst.length;
         return inst.cycles;
     case 0x32:
