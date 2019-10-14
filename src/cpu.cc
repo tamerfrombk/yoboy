@@ -62,6 +62,16 @@ static bool half_carry(uint8_t a, uint8_t b)
 // Apparently, 'xor' is a keyword in C++. Who knew?
 static void xor_(yb::CPU* cpu, uint8_t n)
 {
+    cpu->AF.hi ^= n;
+    if (cpu->AF.hi == 0) {
+        cpu->AF.lo |= ZF;
+    }
+    cpu->AF.lo &= ~(NF | HF | CF);
+}
+
+// Apparently, 'or' is a keyword in C++. Who knew?
+static void or_(yb::CPU* cpu, uint8_t n)
+{
     cpu->AF.hi |= n;
     if (cpu->AF.hi == 0) {
         cpu->AF.lo |= ZF;
@@ -564,6 +574,43 @@ uint8_t yb::CPU::cycle()
         return inst.cycles;
     case 0x3B:
         SP.value -= 1;
+        PC.value += inst.length;
+        return inst.cycles;
+    // OR n
+    case 0xB7:
+        or_(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB0:
+        or_(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB1:
+        or_(this, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB2:
+        or_(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB3:
+        or_(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB4:
+        or_(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB5:
+        or_(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB6:
+        or_(this, mmu_->read8(HL.value));
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xF6:
+        or_(this, mmu_->read8(PC.value + 1));
         PC.value += inst.length;
         return inst.cycles;
     // NOP
