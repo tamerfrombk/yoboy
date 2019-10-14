@@ -394,6 +394,46 @@ uint8_t yb::CPU::cycle()
         PC.value += inst.length;
         return inst.cycles;
     }
+    case 0x47:
+        BC.hi = AF.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x4F:
+        BC.lo = AF.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x57:
+        DE.hi = AF.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x5F:
+        DE.lo = AF.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x67:
+        HL.hi = AF.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x6F:
+        HL.lo = AF.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x02:
+        mmu_->write8(BC.value, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x12:
+        mmu_->write8(DE.value, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x77:
+        mmu_->write8(HL.value, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xEA:
+        mmu_->write8(mmu_->read16(PC.value + 1), AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
@@ -493,11 +533,6 @@ uint8_t yb::CPU::cycle()
         }
         return inst.cycles;
     }
-    // LD A,n
-    case 0x3E:
-        AF.hi = mmu_->read8(PC.value + 1);
-        PC.value += inst.length;
-        return inst.cycles;
     // DI
     case 0xF3:
         // TODO: disable interrupt
