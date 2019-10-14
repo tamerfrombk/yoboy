@@ -202,6 +202,11 @@ uint8_t yb::CPU::cycle()
         AF.hi = mmu_->read8(PC.value + 1);
         PC.value += inst.length;
         return inst.cycles;
+    // DI
+    case 0xF3:
+        // TODO: disable interrupt
+        PC.value += inst.length;
+        return inst.cycles;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
