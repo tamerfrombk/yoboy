@@ -121,10 +121,42 @@ uint8_t yb::CPU::cycle()
         HL.value -= 1;
         PC.value += inst.length;
         return inst.cycles;
+    // DEC n
+    case 0x3D:
+        AF.hi = dec8(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
     case 0x05:
         BC.hi = dec8(this, BC.hi);
         PC.value += inst.length;
         return inst.cycles;
+    case 0x0D:
+        BC.lo = dec8(this, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x15:
+        DE.hi = dec8(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x1D:
+        DE.lo = dec8(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x25:
+        HL.hi = dec8(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x2D:
+        HL.lo = dec8(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x35: {
+        const uint8_t value = dec8(this, mmu_->read8(HL.value));
+        mmu_->write8(HL.value, value);
+        PC.value += inst.length;
+        return inst.cycles;
+    }
+    // JR (cc), n
     case 0x20: {
         if ((AF.lo & ZF) == 0) {
             const uint16_t target = (int8_t)mmu_->read8(PC.value + 1) + PC.value + inst.length;
