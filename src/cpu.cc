@@ -31,6 +31,43 @@ static void xor_(yb::CPU* cpu, uint8_t n)
     cpu->AF.lo &= ~(NF | HF | CF);
 }
 
+static uint8_t dec8(yb::CPU* cpu, uint8_t n)
+{
+    const uint8_t result = n - 1;
+    if (result == 0) {
+        cpu->AF.lo |= ZF;
+    }
+
+    cpu->AF.lo |= NF;
+
+    // Assuming A = LHS and B = RHS ...
+    // We have to borrow from bit 4 if bit 3 is not set in A but it is set in B
+    // 00000100 = 4
+    // 00001000 = 8
+    //     ^--------- Bit 3 is not set in A but set in B
+    // --
+    // 11111100 = -4
+    //
+    // However, given that B will always be 1 in this case, B's bit 3 will always not be set.
+    // 00000001 = 1
+    //     ^--------- Bit 3 is not set
+    //
+    // This means the carry will happen only if the most significant set bit is bit 4. 
+    // In other words, if none of the lower 4 bits are set, then the carry will happen.
+    // 00010100 = 20
+    // 00000001 = 1
+    // --
+    // 00010011 = 19
+    //    ^---------- No carry happened at bit 4
+    //
+    // Set H if no borrow from bit 4 happens
+    if (!(n & 0xF)) {
+        cpu->AF.lo |= HF;
+    }
+
+    return result;
+}
+
 }
 
 yb::CPU::CPU(yb::MMU* mmu)
@@ -83,7 +120,11 @@ uint8_t yb::CPU::cycle()
         mmu_->write8(HL.value, AF.lo);
         HL.value -= 1;
         PC.value += inst.length;
-        return inst.length;
+        return inst.cycles;
+    case 0x05:
+        BC.hi = dec8(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
