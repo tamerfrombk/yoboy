@@ -462,6 +462,11 @@ uint8_t yb::CPU::cycle()
         HL.value += 1;
         PC.value += inst.length;
         return inst.cycles;
+    // LD (C), A
+    case 0xE2:
+        mmu_->write8(0xFF00 + BC.lo, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
