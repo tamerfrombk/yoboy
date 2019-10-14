@@ -12,15 +12,6 @@ static constexpr uint8_t NF = (1 << 6);
 static constexpr uint8_t HF = (1 << 5);
 static constexpr uint8_t CF = (1 << 4);
 
-static void jump_if(yb::CPU* cpu, yb::MMU* mmu, bool cond)
-{
-    if (cond) {
-        const uint16_t target = mmu->read16(cpu->PC.value + 1);
-        yb::log("JP target: 0x%.4X.\n", target);
-        cpu->PC.value = target;
-    }
-}
-
 // Apparently, 'xor' is a keyword in C++. Who knew?
 static void xor_(yb::CPU* cpu, uint8_t n)
 {
@@ -97,9 +88,12 @@ uint8_t yb::CPU::cycle()
     case 0x00:
         PC.value += inst.length;
         return inst.cycles;
-    case 0xC3: 
-        jump_if(this, mmu_, true);
-        return inst.cycles;
+    case 0xC3: {
+        const uint16_t target = mmu_->read16(PC.value + 1);
+        yb::log("JP target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles; 
+    }
     case 0xAF:
         xor_(this, AF.hi);
         PC.value += inst.length;
