@@ -345,6 +345,37 @@ uint8_t yb::CPU::cycle()
         HL.lo = mmu_->read8(HL.value);
         PC.value += inst.length;
         return inst.cycles;
+    // LD r1, r2 (HL)
+    case 0x70:
+        mmu_->write8(HL.value, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x71:
+        mmu_->write8(HL.value, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x72:
+        mmu_->write8(HL.value, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x73:
+        mmu_->write8(HL.value, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x74:
+        mmu_->write8(HL.value, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x75:
+        mmu_->write8(HL.value, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;    
+    case 0x36: {
+        const uint8_t n = mmu_->read8(PC.value + 1);
+        mmu_->write8(HL.value, n);
+        PC.value += inst.length;
+        return inst.cycles;
+    }
     // NOP
     case 0x00:
         PC.value += inst.length;
