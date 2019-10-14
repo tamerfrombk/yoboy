@@ -131,6 +131,40 @@ uint8_t yb::CPU::cycle()
         HL.lo = mmu_->read8(PC.value + 1);
         PC.value += inst.length;
         return inst.cycles;
+    // LD r1, r2
+    case 0x7F:
+        // This instruction technically assigns A to itself but it's been implemented
+        // as a nop.
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x78:
+        AF.hi = BC.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x79:
+        AF.hi = BC.lo;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x7A:
+        AF.hi = DE.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x7B:
+        AF.hi = DE.lo;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x7C:
+        AF.hi = HL.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x7D:
+        AF.hi = HL.lo;
+        PC.value += inst.length;
+        return inst.cycles;    
+    case 0x7E:
+        AF.hi = mmu_->read8(HL.value);
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
