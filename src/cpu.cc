@@ -207,6 +207,20 @@ uint8_t yb::CPU::cycle()
         // TODO: disable interrupt
         PC.value += inst.length;
         return inst.cycles;
+    // LDH (n), A
+    case 0xE0: {
+        const uint8_t n = mmu_->read8(PC.value + 1);
+        mmu_->write8(0xFF00 + n, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    }
+    // LDH A,n
+    case 0xF0: {
+        const uint8_t n = mmu_->read8(PC.value + 1);
+        AF.hi = mmu_->read8(0xFF00 + n);
+        PC.value += inst.length;
+        return inst.cycles;
+    }
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
