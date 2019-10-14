@@ -721,6 +721,11 @@ uint8_t yb::CPU::cycle()
         // TODO: disable interrupt
         PC.value += inst.length;
         return inst.cycles;
+    // EI
+    case 0xFB:
+        // TODO: enable interrupt
+        PC.value += inst.length;
+        return inst.cycles;
     // LDH (n), A
     case 0xE0: {
         const uint8_t n = mmu_->read8(PC.value + 1);
