@@ -255,6 +255,36 @@ uint8_t yb::CPU::cycle()
         DE.hi = mmu_->read8(HL.value);
         PC.value += inst.length;
         return inst.cycles;
+    // LD r1, r2 (E)
+    case 0x58:
+        DE.lo = BC.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x59:
+        DE.lo = BC.lo;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x5A:
+        DE.lo = DE.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x5B:
+        // This instruction technically assigns E to itself but it's been implemented
+        // as a nop
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x5C:
+        DE.lo = HL.hi;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x5D:
+        DE.lo = HL.lo;
+        PC.value += inst.length;
+        return inst.cycles;    
+    case 0x5E:
+        DE.lo = mmu_->read8(HL.value);
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
