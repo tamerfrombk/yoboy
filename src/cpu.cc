@@ -125,6 +125,46 @@ uint8_t yb::CPU::cycle()
         BC.hi = dec8(this, BC.hi);
         PC.value += inst.length;
         return inst.cycles;
+    case 0x20: {
+        if ((AF.lo & ZF) == 0) {
+            const uint16_t target = (int8_t)mmu_->read8(PC.value + 1) + PC.value + inst.length;
+            yb::log("JP target: 0x%.4X.\n", target);
+            PC.value = target;
+        } else {
+            PC.value += inst.length;
+        }
+        return inst.cycles;
+    }
+    case 0x28: {
+        if (AF.lo & ZF) {
+            const uint16_t target = (int8_t)mmu_->read8(PC.value + 1) + PC.value + inst.length;
+            yb::log("JP target: 0x%.4X.\n", target);
+            PC.value = target;
+        } else {
+            PC.value += inst.length;
+        }
+        return inst.cycles;
+    }
+    case 0x30: {
+        if ((AF.lo & CF) == 0) {
+            const uint16_t target = (int8_t)mmu_->read8(PC.value + 1) + PC.value + inst.length;
+            yb::log("JP target: 0x%.4X.\n", target);
+            PC.value = target;
+        } else {
+            PC.value += inst.length;
+        }
+        return inst.cycles;
+    }
+    case 0x38: {
+        if (AF.lo & CF) {
+            const uint16_t target = (int8_t)mmu_->read8(PC.value + 1) + PC.value + inst.length;
+            yb::log("JP target: 0x%.4X.\n", target);
+            PC.value = target;
+        } else {
+            PC.value += inst.length;
+        }
+        return inst.cycles;
+    }
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
