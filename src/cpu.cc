@@ -549,6 +549,23 @@ uint8_t yb::CPU::cycle()
         PC.value = target;
         return inst.cycles;
     }
+    // DEC nn
+    case 0x0B:
+        BC.value -= 1;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x1B:
+        DE.value -= 1;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x2B:
+        HL.value -= 1;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x3B:
+        SP.value -= 1;
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
