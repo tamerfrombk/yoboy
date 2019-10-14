@@ -131,6 +131,7 @@ uint8_t yb::CPU::cycle()
         HL.lo = mmu_->read8(PC.value + 1);
         PC.value += inst.length;
         return inst.cycles;
+    // NOP
     case 0x00:
         PC.value += inst.length;
         return inst.cycles;
