@@ -456,6 +456,12 @@ uint8_t yb::CPU::cycle()
         SP.value = HL.value;
         PC.value += inst.length;
         return inst.cycles;
+    // LDI A, (HL)
+    case 0x2A:
+        AF.hi = mmu_->read8(HL.value);
+        HL.value += 1;
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
