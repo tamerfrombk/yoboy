@@ -165,6 +165,24 @@ uint8_t yb::CPU::cycle()
         AF.hi = mmu_->read8(HL.value);
         PC.value += inst.length;
         return inst.cycles;
+    case 0x0A:
+        AF.hi = mmu_->read8(BC.value);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x1A:
+        AF.hi = mmu_->read8(DE.value);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xFA: {
+        const uint16_t nn = mmu_->read16(PC.value + 1);
+        AF.hi = mmu_->read8(nn);
+        PC.value += inst.length;
+        return inst.cycles;
+    }
+    case 0x3E:
+        AF.hi = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
     // LD r1, r2 (B)
     case 0x40:
         // This instruction technically assigns B to itself but it's been implemented
