@@ -106,6 +106,31 @@ uint8_t yb::CPU::cycle()
 
    // execute
    switch (op) {
+    // LD nn, n
+    case 0x06:
+        BC.hi = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x0E:
+        BC.lo = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x16:
+        DE.hi = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x1E:
+        DE.lo = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x26:
+        HL.hi = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x2E:
+        HL.lo = mmu_->read8(PC.value + 1);
+        PC.value += inst.length;
+        return inst.cycles;
     case 0x00:
         PC.value += inst.length;
         return inst.cycles;
@@ -121,14 +146,6 @@ uint8_t yb::CPU::cycle()
         return inst.cycles;
     case 0x21:
         HL.value = mmu_->read16(PC.value + 1);
-        PC.value += inst.length;
-        return inst.cycles;
-    case 0x0E:
-        BC.lo = mmu_->read8(PC.value + 1);
-        PC.value += inst.length;
-        return inst.cycles;
-    case 0x06:
-        BC.hi = mmu_->read8(PC.value + 1);
         PC.value += inst.length;
         return inst.cycles;
     case 0x32:
