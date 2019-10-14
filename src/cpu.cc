@@ -12,6 +12,30 @@ static constexpr uint8_t NF = (1 << 6);
 static constexpr uint8_t HF = (1 << 5);
 static constexpr uint8_t CF = (1 << 4);
 
+// Assuming a = LHS, b = RHS, and r is the result...
+// We will always have to borrow from bit 4 (half carry)
+// if A is smaller than B in the bottom 4 bits.
+//
+// For example, this subtraction leads to a half carry:
+// a) 00000100 = 4
+// b) 00001000 = 8
+// --
+// r) 11111100 = -4
+// Another example where a carry is required but the numbers 
+// aren't already smaller than what can fit in 4 bits:
+// a) 00010000 = 16
+// b) 00100001 = 33
+// --
+// r) 11101111 = -17
+//
+// The below equation will then compare 0 (bottom 4 bits of a)
+// against 1 (bottom 4 bits of b) to determine if a half carry
+// is necessary.
+static bool half_carry(uint8_t a, uint8_t b)
+{
+    return (a & 0xF) < (b & 0xF);
+}
+
 // Apparently, 'xor' is a keyword in C++. Who knew?
 static void xor_(yb::CPU* cpu, uint8_t n)
 {
@@ -31,32 +55,29 @@ static uint8_t dec8(yb::CPU* cpu, uint8_t n)
 
     cpu->AF.lo |= NF;
 
-    // Assuming A = LHS and B = RHS ...
-    // We have to borrow from bit 4 if bit 3 is not set in A but it is set in B
-    // 00000100 = 4
-    // 00001000 = 8
-    //     ^--------- Bit 3 is not set in A but set in B
-    // --
-    // 11111100 = -4
-    //
-    // However, given that B will always be 1 in this case, B's bit 3 will always not be set.
-    // 00000001 = 1
-    //     ^--------- Bit 3 is not set
-    //
-    // This means the carry will happen only if the most significant set bit is bit 4. 
-    // In other words, if none of the lower 4 bits are set, then the carry will happen.
-    // 00010100 = 20
-    // 00000001 = 1
-    // --
-    // 00010011 = 19
-    //    ^---------- No carry happened at bit 4
-    //
-    // Set H if no borrow from bit 4 happens
-    if (!(n & 0xF)) {
+    if (!half_carry(n, 1)) {
         cpu->AF.lo |= HF;
     }
 
     return result;
+}
+
+static void cp(yb::CPU* cpu, uint8_t n)
+{
+    const uint8_t result = cpu->AF.hi - n;
+    if (result == 0) {
+        cpu->AF.lo |= ZF;
+    }
+
+    cpu->AF.lo |= NF;
+
+    if (!half_carry(cpu->AF.hi, n)) {
+        cpu->AF.lo |= HF;
+    }
+
+    if (cpu->AF.hi < n) {
+        cpu->AF.lo |= CF;
+    }
 }
 
 }
@@ -215,6 +236,43 @@ uint8_t yb::CPU::cycle()
         PC.value += inst.length;
         return inst.cycles;
     }
+    // CP n
+    case 0xBF:
+        cp(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB8:
+        cp(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xB9:
+        cp(this, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xBA:
+        cp(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xBB:
+        cp(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xBC:
+        cp(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xBD:
+        cp(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xBE:
+        cp(this, mmu_->read8(HL.value));
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xFE:
+        cp(this, mmu_->read8(PC.value + 1));
+        PC.value += inst.length;
+        return inst.cycles;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
