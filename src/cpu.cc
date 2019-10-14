@@ -541,6 +541,14 @@ uint8_t yb::CPU::cycle()
         PC.value += inst.length;
         return inst.cycles;
     }
+    // CALL nn
+    case 0xCD: {
+        SP.value = PC.value + inst.length;
+        const uint16_t target = mmu_->read16(PC.value + 1);
+        yb::log("CALL target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
     // NOP
     case 0x00:
         PC.value += inst.length;
