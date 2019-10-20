@@ -16,11 +16,17 @@ namespace yb {
 
         void draw();
 
+        void update();
+
+        bool isQuit() const noexcept;
+
     private:
         Window(const Window&) = delete;
         Window& operator=(const Window&) = delete;
 
         SDL_Window* window_;
         SDL_Surface* surface_;
+
+        bool isQuit_;
     };
 }

@@ -5,6 +5,7 @@
 
 // TODO: proper error handling
 yb::Window::Window(const char* title, int width, int height)
+    : isQuit_(false)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         std::fputs("Unable to initialize SDL.", stderr);
@@ -32,6 +33,21 @@ yb::Window::Window(const char* title, int width, int height)
 void yb::Window::draw()
 {
     SDL_UpdateWindowSurface(window_);
+}
+
+void::yb::Window::update()
+{
+    SDL_Event e;
+    if (SDL_PollEvent(&e) != 0) {
+        if (e.type == SDL_QUIT) {
+            isQuit_ = true;
+        }
+    }
+}
+
+bool yb::Window::isQuit() const noexcept
+{
+    return isQuit_;
 }
 
 yb::Window::~Window()

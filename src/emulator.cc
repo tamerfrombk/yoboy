@@ -10,7 +10,7 @@ yb::Emulator::Emulator(yb::Cartridge cartridge)
         
 bool yb::Emulator::isRunning() const
 {
-    return true;
+    return !window_.isQuit();
 }
 
 void yb::Emulator::start()
@@ -18,6 +18,7 @@ void yb::Emulator::start()
     std::puts("Emulation started.");
     while (isRunning()) {
         cpu_.tick();
+        window_.update();
         window_.draw();
     }
 }
