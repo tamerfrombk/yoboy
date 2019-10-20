@@ -1095,6 +1095,23 @@ uint8_t yb::CPU::cycle()
         HL.value = add16(this, HL.value, SP.value);
         PC.value += inst.length;
         return inst.cycles;
+    // INC nn
+    case 0x03:
+        BC.value += 1;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x13:
+        DE.value += 1;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x23:
+        HL.value += 1;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x33:
+        SP.value += 1;
+        PC.value += inst.length;
+        return inst.cycles;        
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
