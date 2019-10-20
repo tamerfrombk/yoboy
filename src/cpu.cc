@@ -698,6 +698,71 @@ uint8_t yb::CPU::cycle()
         PC.value = target;
         return inst.cycles; 
     }
+    // RST
+    case 0xC7: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x00;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
+    case 0xCF: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x08;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
+    case 0xD7: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x10;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
+    case 0xDF: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x18;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
+    case 0xE7: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x20;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
+    case 0xEF: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x28;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
+    case 0xF7: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x30;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
+    case 0xFF: {
+        st_.push(PC.value + inst.length);
+        SP.value = st_.top();
+        const uint16_t target = 0x0000 + 0x38;
+        yb::log("RST target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles;
+    }
     // XOR
     case 0xAF:
         xor_(this, AF.hi);
