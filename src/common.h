@@ -5,8 +5,6 @@
 
 #define YB_UNUSED(x) (void)x
 
-#define YB_MEM_SIZE (0xFFFF) 
-
 namespace yb {
 
     template <class... Args>
