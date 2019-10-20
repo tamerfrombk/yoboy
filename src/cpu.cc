@@ -651,6 +651,31 @@ uint8_t yb::CPU::cycle()
         PC.value = target;
         return inst.cycles;
     }
+    // PUSH nn
+    case 0xF5: {
+        st_.push(AF.value);
+        SP.value -= 2;
+        PC.value += inst.length;
+        return inst.cycles;
+    }
+    case 0xC5: {
+        st_.push(BC.value);
+        SP.value -= 2;
+        PC.value += inst.length;
+        return inst.cycles;
+    }
+    case 0xD5: {
+        st_.push(DE.value);
+        SP.value -= 2;
+        PC.value += inst.length;
+        return inst.cycles;
+    }
+    case 0xE5: {
+        st_.push(HL.value);
+        SP.value -= 2;
+        PC.value += inst.length;
+        return inst.cycles;
+    }
     // DEC nn
     case 0x0B:
         BC.value -= 1;
