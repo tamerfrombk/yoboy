@@ -698,8 +698,41 @@ uint8_t yb::CPU::cycle()
         PC.value = target;
         return inst.cycles; 
     }
+    // XOR
     case 0xAF:
         xor_(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA8:
+        xor_(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xA9:
+        xor_(this, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xAA:
+        xor_(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xAB:
+        xor_(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xAC:
+        xor_(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xAD:
+        xor_(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xAE:
+        xor_(this, mmu_->read8(HL.value));
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xEE:
+        xor_(this, mmu_->read8(PC.value + 1));
         PC.value += inst.length;
         return inst.cycles;
     case 0x32:
