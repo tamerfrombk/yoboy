@@ -13,6 +13,8 @@ project "yoboy"
 
    files { "src/**.h", "src/**.cc" }
 
+   links { "SDL2" }
+
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
