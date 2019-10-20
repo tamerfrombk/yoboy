@@ -774,6 +774,51 @@ uint8_t yb::CPU::cycle()
         st_.pop();
         SP.value = st_.top();
         return inst.cycles;
+    // RET cc
+    case 0xC0: {
+        if ((AF.lo & ZF) == 0) {
+            yb::log("RET cc target: 0x%.4X.\n", SP.value);
+            PC.value = SP.value;
+            st_.pop();
+            SP.value = st_.top();
+        } else {
+            PC.value += inst.cycles;
+        }
+        return inst.length;
+    }
+    case 0xC8: {
+        if ((AF.lo & ZF) != 0) {
+            yb::log("RET cc target: 0x%.4X.\n", SP.value);
+            PC.value = SP.value;
+            st_.pop();
+            SP.value = st_.top();
+        } else {
+            PC.value += inst.cycles;
+        }
+        return inst.length;
+    }
+    case 0xD0: {
+        if ((AF.lo & CF) == 0) {
+            yb::log("RET cc target: 0x%.4X.\n", SP.value);
+            PC.value = SP.value;
+            st_.pop();
+            SP.value = st_.top();
+        } else {
+            PC.value += inst.cycles;
+        }
+        return inst.length;
+    }
+    case 0xD8: {
+        if ((AF.lo & CF) != 0) {
+            yb::log("RET cc target: 0x%.4X.\n", SP.value);
+            PC.value = SP.value;
+            st_.pop();
+            SP.value = st_.top();
+        } else {
+            PC.value += inst.cycles;
+        }
+        return inst.length;
+    }
     // POP
     case 0xF1:
         yb::log("POP target: 0x%.4X.\n", SP.value);
