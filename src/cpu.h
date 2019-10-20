@@ -23,7 +23,7 @@ namespace yb {
     public:
         CPU(yb::MMU* mmu);
 
-        uint8_t cycle();
+        uint8_t tick();
     
         Register AF;
         Register BC;

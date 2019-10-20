@@ -235,7 +235,7 @@ yb::CPU::CPU(yb::MMU* mmu)
     PC.value = 0x100;
 }
 
-uint8_t yb::CPU::cycle()
+uint8_t yb::CPU::tick()
 {
     // fetch
    uint8_t op = mmu_->read8(PC.value);

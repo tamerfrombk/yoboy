@@ -16,6 +16,6 @@ void yb::Emulator::start()
 {
     std::puts("Emulation started.");
     while (isRunning()) {
-        cpu_.cycle(); 
+        cpu_.tick(); 
     }
 }
