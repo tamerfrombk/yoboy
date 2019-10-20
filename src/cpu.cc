@@ -807,9 +807,17 @@ uint8_t yb::CPU::cycle()
     case 0x00:
         PC.value += inst.length;
         return inst.cycles;
+    // JP nn
     case 0xC3: {
         const uint16_t target = mmu_->read16(PC.value + 1);
         yb::log("JP target: 0x%.4X.\n", target);
+        PC.value = target;
+        return inst.cycles; 
+    }
+    // JP (HL)
+    case 0xE9: {
+        const uint16_t target = mmu_->read16(HL.value);
+        yb::log("JP (HL) target: 0x%.4X.\n", target);
         PC.value = target;
         return inst.cycles; 
     }
