@@ -59,6 +59,14 @@ static bool half_carry(uint8_t a, uint8_t b)
     return ((a & 0xF) + (b & 0xF)) > 0xF;
 }
 
+// use a larger type to make full carry detection easier
+static bool full_carry(uint8_t a, uint8_t b)
+{
+    const uint16_t result = a + b;
+
+    return result > 0xFF;
+}
+
 // Apparently, 'xor' is a keyword in C++. Who knew?
 static void xor_(yb::CPU* cpu, uint8_t n)
 {
@@ -155,6 +163,26 @@ static uint8_t swap(yb::CPU* cpu, uint8_t n)
         cpu->AF.lo |= ZF;
     }
     cpu->AF.lo &= ~(NF | HF | CF);
+
+    return result;
+}
+
+static uint8_t add(yb::CPU* cpu, uint8_t n)
+{
+    const uint8_t result = cpu->AF.hi + n;
+    if (result == 0) {
+        cpu->AF.lo |= ZF;
+    }
+
+    cpu->AF.lo &= ~(NF);
+    
+    if (half_carry(cpu->AF.hi, n)) {
+        cpu->AF.lo |= HF;
+    }
+
+    if (full_carry(cpu->AF.hi, n)) {
+        cpu->AF.lo |= CF;
+    }
 
     return result;
 }
@@ -758,7 +786,7 @@ uint8_t yb::CPU::cycle()
     case 0xFF: {
         st_.push(PC.value + inst.length);
         SP.value = st_.top();
-        const uint16_t target = 0x0000 + 0x38;
+        const uint16_t target = 0x0000 + 0x28;
         yb::log("RST target: 0x%.4X.\n", target);
         PC.value = target;
         return inst.cycles;
@@ -951,6 +979,43 @@ uint8_t yb::CPU::cycle()
         yb::log("PREFIX.");
         PC.value += 1;
         return execute_prefix();
+    // ADD
+    case 0x87:
+        AF.hi = add(this, AF.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x80:
+        AF.hi = add(this, BC.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x81:
+        AF.hi = add(this, BC.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x82:
+        AF.hi = add(this, DE.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x83:
+        AF.hi = add(this, DE.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x84:
+        AF.hi = add(this, HL.hi);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x85:
+        AF.hi = add(this, HL.lo);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x86:
+        AF.hi = add(this, mmu_->read8(HL.value));
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xC6:
+        AF.hi = add(this, mmu_->read8(PC.value + 1));
+        PC.value += inst.length;
+        return inst.cycles;
     default:
         yb::exit("Unknown instruction 0x%.2X.\n", op);
         return 0;
