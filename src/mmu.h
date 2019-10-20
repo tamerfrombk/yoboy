@@ -14,6 +14,7 @@ namespace yb {
         uint16_t read16(uint16_t addr) const;
 
         void write8(uint16_t addr, uint8_t value);
+        void write16(uint16_t addr, uint16_t value);
 
     private:
         uint8_t* cartridge_;

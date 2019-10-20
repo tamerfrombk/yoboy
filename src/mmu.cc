@@ -29,3 +29,10 @@ void yb::MMU::write8(uint16_t addr, uint8_t value)
     // TODO: add checks
     ram_[addr] = value;
 }
+
+void yb::MMU::write16(uint16_t addr, uint16_t value)
+{
+    // TODO: add checks
+    ram_[addr] = value >> 8;
+    ram_[addr + 1] = value & 0xFF;
+}

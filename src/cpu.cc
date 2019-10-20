@@ -1078,6 +1078,11 @@ uint8_t yb::CPU::cycle()
         PC.value += inst.length;
         return inst.cycles;
     }
+    // LD (nn), SP
+    case 0x08:
+        mmu_->write16(mmu_->read16(PC.value + 1), SP.value);
+        PC.value += inst.length;
+        return inst.cycles;
     // CP n
     case 0xBF:
         cp(this, AF.hi);
