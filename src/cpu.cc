@@ -38,7 +38,7 @@ static bool half_borrow(uint8_t a, uint8_t b)
 
 // Assuming a = LHS, b = RHS, and r is the result...
 // We will always have to carry from bit 3
-// if the result is larger that 15 when taking into account the lower nibble.
+// if the result is larger than 15 when taking into account the lower nibble.
 // For example, here a carry is required:
 // a) 00001000 = 8
 // b) 00001000 = 8
@@ -65,6 +65,22 @@ static bool full_carry(uint8_t a, uint8_t b)
     const uint16_t result = a + b;
 
     return result > 0xFF;
+}
+
+// Assuming a = LHS, b = RHS, and r is the result...
+// We will always have to carry from bit 11
+// if the result is larger than 0x7FF or 2047 decimal when taking into account the lower 11 bits.
+static bool half_carry16(uint16_t a, uint16_t b)
+{
+    return ((a & 0x7FF) + (b & 0x7FF)) > 0x7FF;
+}
+
+// use a larger type to make full carry detection easier
+static bool full_carry16(uint16_t a, uint16_t b)
+{
+    const uint32_t result = a + b;
+
+    return result > 0xFFFF;
 }
 
 // Apparently, 'xor' is a keyword in C++. Who knew?
@@ -181,6 +197,23 @@ static uint8_t add(yb::CPU* cpu, uint8_t n)
     }
 
     if (full_carry(cpu->AF.hi, n)) {
+        cpu->AF.lo |= CF;
+    }
+
+    return result;
+}
+
+static uint16_t add16(yb::CPU* cpu, uint16_t a, uint16_t b)
+{
+    const uint16_t result = a + b;
+
+    cpu->AF.lo &= ~(NF);
+    
+    if (half_carry16(a, b)) {
+        cpu->AF.lo |= HF;
+    }
+
+    if (full_carry16(a, b)) {
         cpu->AF.lo |= CF;
     }
 
@@ -1043,6 +1076,23 @@ uint8_t yb::CPU::cycle()
         return inst.cycles;
     case 0xC6:
         AF.hi = add(this, mmu_->read8(PC.value + 1));
+        PC.value += inst.length;
+        return inst.cycles;
+    // ADD HL, n
+    case 0x09:
+        HL.value = add16(this, HL.value, BC.value);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x19:
+        HL.value = add16(this, HL.value, DE.value);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x29:
+        HL.value = add16(this, HL.value, HL.value);
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0x39:
+        HL.value = add16(this, HL.value, SP.value);
         PC.value += inst.length;
         return inst.cycles;
     default:
