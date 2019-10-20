@@ -716,6 +716,35 @@ uint8_t yb::CPU::cycle()
         st_.pop();
         SP.value = st_.top();
         return inst.cycles;
+    // POP
+    case 0xF1:
+        yb::log("POP target: 0x%.4X.\n", SP.value);
+        AF.value = SP.value;
+        st_.pop();
+        SP.value = st_.top() + 2;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xC1:
+        yb::log("POP target: 0x%.4X.\n", SP.value);
+        BC.value = SP.value;
+        st_.pop();
+        SP.value = st_.top() + 2;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xD1:
+        yb::log("POP target: 0x%.4X.\n", SP.value);
+        DE.value = SP.value;
+        st_.pop();
+        SP.value = st_.top() + 2;
+        PC.value += inst.length;
+        return inst.cycles;
+    case 0xE1:
+        yb::log("POP target: 0x%.4X.\n", SP.value);
+        HL.value = SP.value;
+        st_.pop();
+        SP.value = st_.top() + 2;
+        PC.value += inst.length;
+        return inst.cycles;
     // NOP
     case 0x00:
         PC.value += inst.length;
